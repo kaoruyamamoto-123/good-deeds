@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Карта добрых дел</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="logo"></div>
+      <div class="brand">
+        <div class="company-name">Карта добрых дел</div>
+        <div class="company-sub">карта некоммерческих организаций</div>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button class="btn-outline" id="add-point-btn">
+        <span class="material-icons">add</span>Добавить точку</button>
+      <button class="btn-outline" id="login-btn">Войти</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="search-box">
+        <span class="material-icons search-icon">search</span>
+        <input type="text" id="searchInput" placeholder="Поиск по названию" />
+      </div>
+
+      <h3 class="filters-title">Фильтры</h3>
+      <div class="filters-grid" id="filters"></div>
+
+      <div class="found">Найдено: <span id="found-count">0</span></div>
+
+      <div id="orgListLeft" class="org-list"></div>
+
+      <button id="load-more-left" class="btn-outline mt-2">Загрузить ещё</button>
+    </aside>
+
+    <main class="main-area">
+      <aside class="right-col">
+        <div class="city-block">
+            <h4>Город</h4>
+            <input id="city-input" class="input" placeholder="Введите город" autocomplete="off" />
+            <ul id="city-suggestions" class="city-suggestions"></ul>
+            <div id="selected-city" class="selected-city"></div>
+        </div>
+
+
+        <div class="map-placeholder">Карта (плейсхолдер)</div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Sheet -->
+  <div class="mobile-panel" id="mobilePanel">
+    <div class="panel-header" id="panelHeader"></div>
+    <div class="mobile-content">
+      <div class="search-box mobile-search">
+        <span class="material-icons search-icon">search</span>
+        <input type="text" id="searchInputMobile" placeholder="Поиск по названию" />
+      </div>
+
+      <h3 class="filters-title">Фильтры</h3>
+      <div class="filters-grid" id="filtersMobile"></div>
+
+      <div class="found">Найдено: <span id="found-count-mobile">0</span></div>
+
+      <div id="orgListMobile" class="org-list"></div>
+
+      <div style="padding:12px;text-align:center">
+        <button id="mobileCloseBtn" class="btn-outline">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+    <footer class="footer">© <span id="year"></span> Карта добрых дел </footer>
+
+
+  <script src="app.js"></script>
+</body>
+</html>
