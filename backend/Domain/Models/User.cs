@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Enums;
 using Domain.Events;
 using Domain.ValueObjects;
 
@@ -16,10 +17,12 @@ public class User : AggregateRoot<Guid>
     public Guid OrganizationId { get; private init; }
     public virtual Organization? Organization { get; private set; }
     
+    public int RoleId { get; private set; }
+    public virtual Role Role { get; private set; }
     
     private readonly List<RefreshToken> _refreshTokens = [];
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
-
+    
     private User() { }
 
     public static User Create(string email, string passwordHash, string firstName, string lastName)
@@ -49,6 +52,11 @@ public class User : AggregateRoot<Guid>
         IsActive = true;
     }
 
+    public void MakeAdmin()
+    {
+        RoleId = (int)RoleEnum.Admin;
+    }
+
     public RefreshToken AddRefreshToken(string token, DateTime expires)
     {
         var refreshToken = RefreshToken.Create(Id, token, expires);
@@ -57,12 +65,15 @@ public class User : AggregateRoot<Guid>
     }
 
     public Organization CreateOrganization(
-        Guid categoryId, string title, string description,
-        string phone, string address, Coordinates coordinates, string link, string logoPath)
+        string title, string description, List<int> categoryIds,
+        string phone, Address address, Coordinates coordinates, string link, string logoPath)
     {
-        var organization = Organization.Create(Id, categoryId, title, description, phone, address, coordinates, link, logoPath);
+        var organization = Organization.Create(Id, title, description, phone, address, coordinates, link, logoPath);
+        foreach (var category in categoryIds)
+        {
+            organization.AddCategory(category);
+        }
         Organization = organization;
         return organization;
     }
-    
 }

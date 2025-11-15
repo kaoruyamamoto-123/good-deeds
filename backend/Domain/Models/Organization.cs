@@ -7,15 +7,15 @@ public class Organization : AggregateRoot<Guid>
 {
     public string Title { get; private init; } = null!;
     public string Description { get; private init; } = null!;
-    public string Phone { get; private init; } = null!;
-    public string Address { get; private init; } = null!;
-    public Coordinates Coordinates { get; private init; } = null!;
+    public string? Phone { get; private set; }
+    public Address? Address { get; private set; }
+    public Coordinates? Coordinates { get; private set; }
     public string Link { get; private init; } = null!;
-    public string LogoPath { get; private init; } = null!;
+    public string? LogoPath { get; private set; }
     public DateTime CreatedAt { get; private init; }
-
-    public Guid CategoryId { get; private init; }
-    public virtual Category Category { get; private init; } = null!;
+    
+    private readonly List<OrganizationCategory> _categories = [];
+    public IReadOnlyCollection<OrganizationCategory> Categories => _categories.AsReadOnly();
     
     // Nullable user for tests
     public Guid? UserId { get; private init; }
@@ -23,9 +23,9 @@ public class Organization : AggregateRoot<Guid>
 
     private Organization() { }
 
-    public static Organization Create(Guid userId, Guid categoryId,
-        string title, string description,
-        string phone, string address, Coordinates coordinates, string link, string logoPath)
+    public static Organization Create(
+        Guid? userId, string title, string description,
+        string? phone, Address? address, Coordinates? coordinates, string link, string? logoPath)
     {
         var organization = new Organization
         {
@@ -38,10 +38,15 @@ public class Organization : AggregateRoot<Guid>
             Link = link,
             LogoPath = logoPath,
             UserId = userId,
-            CategoryId = categoryId,
             CreatedAt = DateTime.UtcNow,
         };
         
         return organization;
+    }
+
+    public void AddCategory(int categoryId)
+    { 
+        var oc = OrganizationCategory.Create(Id, categoryId);
+        _categories.Add(oc);
     }
 }

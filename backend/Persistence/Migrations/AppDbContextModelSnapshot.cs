@@ -24,9 +24,8 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Models.Category", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     b.Property<string>("Title")
@@ -43,37 +42,37 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("601f577f-fdd1-487e-aa1e-11c460c81322"),
-                            Title = "Местное сообщество и развитие территорий"
-                        },
-                        new
-                        {
-                            Id = new Guid("109f3560-211c-4592-9419-079cef41f707"),
-                            Title = "Социальная защита (помощь людям в трудной ситуации)"
-                        },
-                        new
-                        {
-                            Id = new Guid("4773fe88-502e-4c64-aba3-d1d9fc8336c9"),
-                            Title = "Экология и устойчивое развитие"
-                        },
-                        new
-                        {
-                            Id = new Guid("731bde38-58d0-40e6-80f5-711471617a04"),
-                            Title = "Здоровье и спорт"
-                        },
-                        new
-                        {
-                            Id = new Guid("c7c91641-c832-47d2-b2d5-335066dd0c1d"),
-                            Title = "Культура и образование"
-                        },
-                        new
-                        {
-                            Id = new Guid("5eed75fb-153b-4d4c-bf01-f2e841150d00"),
+                            Id = 4,
                             Title = "Защита животных"
                         },
                         new
                         {
-                            Id = new Guid("2421e7d2-0b22-4fd5-b7b5-5f3f0b9a4ecb"),
+                            Id = 1,
+                            Title = "Здоровье и спорт"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Title = "Местное сообщество и развитие территорий"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Title = "Социальная защита (помощь людям в трудной ситуации)"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Title = "Экология и устойчивое развитие"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Title = "Культура и образование"
+                        },
+                        new
+                        {
+                            Id = 7,
                             Title = "Другое"
                         });
                 });
@@ -83,16 +82,6 @@ namespace Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("address");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("category_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -111,12 +100,11 @@ namespace Persistence.Migrations
                         .HasColumnName("link");
 
                     b.Property<string>("LogoPath")
-                        .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("logo_path");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("phone");
@@ -134,14 +122,39 @@ namespace Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_organizations");
 
-                    b.HasIndex("CategoryId")
-                        .HasDatabaseName("ix_organizations_category_id");
+                    b.HasIndex("Title")
+                        .HasDatabaseName("ix_organizations_title");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Title"), "gin");
 
                     b.HasIndex("UserId")
                         .IsUnique()
                         .HasDatabaseName("ix_organizations_user_id");
 
                     b.ToTable("organizations", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Models.OrganizationCategory", b =>
+                {
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("organization_id");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer")
+                        .HasColumnName("category_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.HasKey("OrganizationId", "CategoryId")
+                        .HasName("pk_organization_category");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_organization_category_category_id");
+
+                    b.ToTable("organization_category", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.RefreshToken", b =>
@@ -179,6 +192,38 @@ namespace Persistence.Migrations
                         .HasDatabaseName("ix_refresh_tokens_user_id");
 
                     b.ToTable("refresh_tokens", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_role");
+
+                    b.ToTable("role", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "User"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Models.User", b =>
@@ -225,6 +270,10 @@ namespace Persistence.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("password_hash");
 
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -232,23 +281,46 @@ namespace Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_users_email");
 
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_users_role_id");
+
                     b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Organization", b =>
                 {
-                    b.HasOne("Domain.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_organizations_categories_category_id");
-
                     b.HasOne("Domain.Models.User", "User")
                         .WithOne("Organization")
                         .HasForeignKey("Domain.Models.Organization", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_organizations_users_user_id");
+
+                    b.OwnsOne("Domain.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("OrganizationId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("character varying(255)")
+                                .HasColumnName("address_city");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("character varying(255)")
+                                .HasColumnName("address_street");
+
+                            b1.HasKey("OrganizationId");
+
+                            b1.ToTable("organizations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrganizationId")
+                                .HasConstraintName("fk_organizations_organizations_id");
+                        });
 
                     b.OwnsOne("Domain.ValueObjects.Coordinates", "Coordinates", b1 =>
                         {
@@ -273,12 +345,32 @@ namespace Persistence.Migrations
                                 .HasConstraintName("fk_organizations_organizations_id");
                         });
 
-                    b.Navigation("Category");
+                    b.Navigation("Address");
 
-                    b.Navigation("Coordinates")
-                        .IsRequired();
+                    b.Navigation("Coordinates");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Models.OrganizationCategory", b =>
+                {
+                    b.HasOne("Domain.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_organization_category_categories_category_id");
+
+                    b.HasOne("Domain.Models.Organization", "Organization")
+                        .WithMany("Categories")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_organization_category_organizations_organization_id");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Domain.Models.RefreshToken", b =>
@@ -291,6 +383,28 @@ namespace Persistence.Migrations
                         .HasConstraintName("fk_refresh_tokens_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Models.User", b =>
+                {
+                    b.HasOne("Domain.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_users_role_role_id");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("Domain.Models.Organization", b =>
+                {
+                    b.Navigation("Categories");
+                });
+
+            modelBuilder.Entity("Domain.Models.Role", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Domain.Models.User", b =>

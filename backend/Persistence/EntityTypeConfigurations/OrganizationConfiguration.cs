@@ -16,32 +16,33 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
             .IsRequired()
             .HasMaxLength(255);
         
+        builder.HasIndex(o => o.Title)
+            .IsUnique(false)
+            .HasMethod("gin");
+        
         builder.Property(o => o.Description)
             .IsRequired()
             .HasMaxLength(255);
         
-        builder.Property(o => o.Phone)
-            .IsRequired()
-            .HasMaxLength(255);
-        
-        builder.Property(o => o.Address)
-            .IsRequired()
-            .HasMaxLength(255);
+        builder.Property(o => o.Phone).HasMaxLength(255);
+
+        builder.OwnsOne(o => o.Address, navigationBuilder =>
+        {
+            navigationBuilder.Property(a => a.City).HasMaxLength(255);
+            navigationBuilder.Property(a => a.Street).HasMaxLength(255);
+        });
         
         builder.OwnsOne(o => o.Coordinates, navigationBuilder =>
         {
-            navigationBuilder.Property(o => o.Latitude)
-                .IsRequired()
-                .HasColumnName("latitude");
-            
-            navigationBuilder.Property(o => o.Longitude)
-                .IsRequired()
-                .HasColumnName("longitude");
+            navigationBuilder.Property(o => o.Latitude).HasColumnName("latitude");
+            navigationBuilder.Property(o => o.Longitude).HasColumnName("longitude");
         });
         
         builder.Property(o => o.Link)
             .IsRequired()
             .HasMaxLength(255);
+        
+        builder.Property(o => o.LogoPath).HasMaxLength(255);
 
         builder.Property(o => o.CreatedAt).IsRequired();
     }

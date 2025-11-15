@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Organizations.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,8 +28,6 @@ public static class DependencyInjection
         {
             options.UseNpgsql(postgresConnectionString)
                 .UseSnakeCaseNamingConvention();
-            options.ConfigureWarnings(w => 
-                w.Ignore(RelationalEventId.PendingModelChangesWarning));
         });
         
         var redisConnectionString = configuration.GetConnectionString("Redis")
@@ -44,6 +43,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IUsersRepository, UsersRepository>();
         services.AddScoped<IRefreshTokensRepository, RefreshTokensRepository>();
+        services.AddScoped<IOrganizationsRepository, OrganizationsRepository>();
 
         services.AddScoped<IConfirmationCodesRepository, ConfirmationCodesRepository>();
         

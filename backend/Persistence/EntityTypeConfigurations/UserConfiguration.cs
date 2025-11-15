@@ -28,6 +28,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.LastName)
             .HasMaxLength(255)
             .IsRequired(false);
+        
+        builder.HasOne(u => u.Role)
+            .WithMany(r => r.Users)
+            .HasForeignKey(u => u.RoleId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(u => u.IsActive).HasDefaultValue(false);
         builder.Property(u => u.CreatedAt);

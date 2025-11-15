@@ -6,6 +6,7 @@ using Application.Users.Interfaces;
 using Infrastructure.Auth;
 using Infrastructure.Email;
 using Infrastructure.Files;
+using Infrastructure.Map;
 
 namespace Infrastructure;
 
@@ -16,6 +17,8 @@ public static class DependencyInjection
         services.AddAuthServices(configuration)
             .AddEmailServices(configuration)
             .AddFilesServices();
+        
+        services.AddScoped<IMapClient, MapClient>();
         
         return services;
     }

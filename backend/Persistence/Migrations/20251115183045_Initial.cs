@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,12 +18,25 @@ namespace Persistence.Migrations
                 name: "categories",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false),
                     title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_categories", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "role",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_role", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -36,11 +50,18 @@ namespace Persistence.Migrations
                     last_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    organization_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    organization_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    role_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_users", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_users_role_role_id",
+                        column: x => x.role_id,
+                        principalTable: "role",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -50,25 +71,19 @@ namespace Persistence.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    phone = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    address = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    latitude = table.Column<double>(type: "double precision", nullable: false),
-                    longitude = table.Column<double>(type: "double precision", nullable: false),
+                    phone = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    address_city = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    address_street = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    latitude = table.Column<double>(type: "double precision", nullable: true),
+                    longitude = table.Column<double>(type: "double precision", nullable: true),
                     link = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    logo_path = table.Column<string>(type: "text", nullable: false),
+                    logo_path = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    category_id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_organizations", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_organizations_categories_category_id",
-                        column: x => x.category_id,
-                        principalTable: "categories",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_organizations_users_user_id",
                         column: x => x.user_id,
@@ -98,24 +113,64 @@ namespace Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "organization_category",
+                columns: table => new
+                {
+                    organization_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    category_id = table.Column<int>(type: "integer", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_organization_category", x => new { x.organization_id, x.category_id });
+                    table.ForeignKey(
+                        name: "fk_organization_category_categories_category_id",
+                        column: x => x.category_id,
+                        principalTable: "categories",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_organization_category_organizations_organization_id",
+                        column: x => x.organization_id,
+                        principalTable: "organizations",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "categories",
                 columns: new[] { "id", "title" },
                 values: new object[,]
                 {
-                    { new Guid("109f3560-211c-4592-9419-079cef41f707"), "Социальная защита (помощь людям в трудной ситуации)" },
-                    { new Guid("2421e7d2-0b22-4fd5-b7b5-5f3f0b9a4ecb"), "Другое" },
-                    { new Guid("4773fe88-502e-4c64-aba3-d1d9fc8336c9"), "Экология и устойчивое развитие" },
-                    { new Guid("5eed75fb-153b-4d4c-bf01-f2e841150d00"), "Защита животных" },
-                    { new Guid("601f577f-fdd1-487e-aa1e-11c460c81322"), "Местное сообщество и развитие территорий" },
-                    { new Guid("731bde38-58d0-40e6-80f5-711471617a04"), "Здоровье и спорт" },
-                    { new Guid("c7c91641-c832-47d2-b2d5-335066dd0c1d"), "Культура и образование" }
+                    { 1, "Здоровье и спорт" },
+                    { 2, "Местное сообщество и развитие территорий" },
+                    { 3, "Социальная защита (помощь людям в трудной ситуации)" },
+                    { 4, "Защита животных" },
+                    { 5, "Экология и устойчивое развитие" },
+                    { 6, "Культура и образование" },
+                    { 7, "Другое" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "role",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1, "Admin" },
+                    { 2, "User" }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_organizations_category_id",
-                table: "organizations",
+                name: "ix_organization_category_category_id",
+                table: "organization_category",
                 column: "category_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_organizations_title",
+                table: "organizations",
+                column: "title")
+                .Annotation("Npgsql:IndexMethod", "gin");
 
             migrationBuilder.CreateIndex(
                 name: "ix_organizations_user_id",
@@ -139,13 +194,18 @@ namespace Persistence.Migrations
                 table: "users",
                 column: "email",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_users_role_id",
+                table: "users",
+                column: "role_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "organizations");
+                name: "organization_category");
 
             migrationBuilder.DropTable(
                 name: "refresh_tokens");
@@ -154,7 +214,13 @@ namespace Persistence.Migrations
                 name: "categories");
 
             migrationBuilder.DropTable(
+                name: "organizations");
+
+            migrationBuilder.DropTable(
                 name: "users");
+
+            migrationBuilder.DropTable(
+                name: "role");
         }
     }
 }
