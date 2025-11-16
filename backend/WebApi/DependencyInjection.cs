@@ -52,7 +52,15 @@ public static class DependencyInjection
 
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
+            }); 
+        
+        services.AddAuthorization(opts =>
+        {
+            opts.AddPolicy("Admin", policy =>
+            {
+                policy.RequireClaim("role", "Admin");
             });
+        });
 
         return services;
     }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Application;
 using Infrastructure;
+using Microsoft.AspNetCore.Localization;
 using Persistence;
 
 using WebAPI;
@@ -31,7 +32,16 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Adding and configuration authentication by JWT Tokens
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.RequestCultureProviders = new List<IRequestCultureProvider>
+    {
+        new QueryStringRequestCultureProvider(),
+        new CookieRequestCultureProvider()
+    };
+});
+
+// Adding and configuration authentication and authorization by JWT Tokens
 builder.Services.AddAuthServices(builder.Configuration);
 
 builder.Services.AddBackgroundServices();
@@ -70,6 +80,8 @@ app.UseExceptionHandler();
 
 app.UseRouting();
 app.UseCors("MyPolicy");
+
+app.UseRequestLocalization();
 
 app.UseCookiePolicy(new CookiePolicyOptions
 {

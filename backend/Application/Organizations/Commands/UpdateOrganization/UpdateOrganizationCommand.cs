@@ -1,9 +1,10 @@
 using Application.Shared.Data;
 using Application.Shared.Messaging;
 
-namespace Application.Organizations.Commands.CreateOrganization;
+namespace Application.Organizations.Commands.UpdateOrganization;
 
-public record CreateOrganizationCommand(
+public record UpdateOrganizationCommand(
+    Guid UserId,
     string Title,
     string Description,
     string? Phone,

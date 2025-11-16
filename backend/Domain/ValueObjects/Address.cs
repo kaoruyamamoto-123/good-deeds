@@ -44,7 +44,7 @@ public class Address
     public override string ToString() => $"{City}, {Street}";
 
     // Operator overloads
-    public static bool operator ==(Address left, Address right) => Equals(left, right);
+    public static bool operator ==(Address? left, Address? right) => Equals(left, right);
     
-    public static bool operator !=(Address left, Address right) => !Equals(left, right);
+    public static bool operator !=(Address? left, Address? right) => !Equals(left, right);
 }

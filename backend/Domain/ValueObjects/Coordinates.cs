@@ -46,7 +46,7 @@ public sealed class Coordinates
     public override string ToString() => $"({Latitude:N6}, {Longitude:N6})";
 
     // Operator overloads
-    public static bool operator ==(Coordinates left, Coordinates right) => Equals(left, right);
+    public static bool operator ==(Coordinates? left, Coordinates? right) => Equals(left, right);
     
-    public static bool operator !=(Coordinates left, Coordinates right) => !Equals(left, right);
+    public static bool operator !=(Coordinates? left, Coordinates? right) => !Equals(left, right);
 }

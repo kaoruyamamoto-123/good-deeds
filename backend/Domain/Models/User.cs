@@ -1,6 +1,5 @@
 ﻿using Domain.Common;
 using Domain.Enums;
-using Domain.Events;
 using Domain.ValueObjects;
 
 namespace Domain.Models;
@@ -34,11 +33,13 @@ public class User : AggregateRoot<Guid>
             PasswordHash = passwordHash,
             FirstName = firstName,
             LastName = lastName,
-            IsActive = false,
+            //IsActive = false,
+            IsActive = true,
             CreatedAt = DateTime.UtcNow,
+            RoleId = (int)RoleEnum.User
         };
         
-        user.AddDomainEvent(new UserRegisteredEvent(user.Id, user.Email));
+        //user.AddDomainEvent(new UserRegisteredEvent(user.Id, user.Email));
         return user;
     }
     
@@ -66,7 +67,7 @@ public class User : AggregateRoot<Guid>
 
     public Organization CreateOrganization(
         string title, string description, List<int> categoryIds,
-        string phone, Address address, Coordinates coordinates, string link, string logoPath)
+        string? phone, Address? address, Coordinates? coordinates, string link, string? logoPath)
     {
         var organization = Organization.Create(Id, title, description, phone, address, coordinates, link, logoPath);
         foreach (var category in categoryIds)

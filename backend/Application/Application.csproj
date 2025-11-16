@@ -16,4 +16,9 @@
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Organizations\Events\OrganizationDeletedEventHandler\" />
+      <Folder Include="Organizations\Events\OrganizationUpdatedEventHandler\" />
+    </ItemGroup>
+
 </Project>

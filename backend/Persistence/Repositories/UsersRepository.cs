@@ -23,7 +23,10 @@ public class UsersRepository : IUsersRepository
     {
         var user = await _dbContext.Users
             .AsNoTracking()
+            .Include(u => u.Organization)
+            .Include(u => u.Role)
             .SingleOrDefaultAsync(u => u.Id == id, cancellationToken);
+        
         return user;
     }
 
@@ -31,6 +34,7 @@ public class UsersRepository : IUsersRepository
     {
         var user = await _dbContext.Users
             .AsNoTracking()
+            .Include(u => u.Role)
             .SingleOrDefaultAsync(u => u.Email == email, cancellationToken);
         
         return user;
@@ -40,6 +44,7 @@ public class UsersRepository : IUsersRepository
     {
         var user = await _dbContext.Users
             .Include(u => u.RefreshTokens)
+            .Include(u => u.Role)
             .SingleOrDefaultAsync(u => u.Email == email, cancellationToken);
         
         return user;   
