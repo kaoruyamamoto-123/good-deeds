@@ -39,14 +39,14 @@ a:hover{
 
 
 /* NAVBAR */
-.navbar{position:sticky;top:0;z-index:60;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#fff;border-bottom:1px solid #e6eef7;background-position: right;background-repeat: no-repeat;background-image:url(img/vector.png);}
+.navbar{width: 100%;;position:sticky;top:0;z-index:60;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#fff;border-bottom:1px solid #025fa127;background-position: right;background-repeat: no-repeat;background-image:url(img/vector.png);flex-wrap: wrap;}
 .nav-left{display:flex;align-items:center;gap:12px}
-.logo{width:44px;height:44px;background: url(img/logo.png) no-repeat center center / cover;}
+.logo{width:44px;height:44px;background: url(img/logo.png) no-repeat center/contain;}
 .brand .company-name{font-weight:600}
 .company-name{font-size: 28px;color: #333333;}
 .brand .company-sub{font-size:12px;color:#333333a2}
 .nav-right{display:flex;align-items:center;gap:10px}
-.btn-outline{color: white;background:#025EA1;padding:6px 10px;border-radius:6px;cursor:pointer;border:transparent;}
+.btn-outline{height: 28px;color: white;background:#025EA1;padding:6px 10px;border-radius:6px;cursor:pointer;border:transparent;}
 .btn-outline:hover{background: #004f85;}
 #add-point-btn {
   display: flex;
@@ -58,6 +58,48 @@ a:hover{
   color: white;
   font-size: 20px;
 }
+
+.notif-icon {
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.notif-icon .material-icons {
+  color: #025EA1;
+}
+
+.material-icons:hover {
+  color: #004f85;;
+}
+
+
+@media (max-width: 480px) {
+  .navbar {
+    flex-direction: column;
+    align-items: stretch;
+    background-size: cover;
+    background-position: 30px 50%;
+  }
+
+  .navbar button {
+    width: 100%;
+  }
+
+  .btn-outline{
+    height: 40px;
+    margin-top: 8px;
+  }
+}
+
+
+
+
+
 
 /* Layout */
 .layout{display:flex}
@@ -120,18 +162,19 @@ a:hover{
 .org-card:hover{cursor: pointer;border: 1.5px solid #33333359; background: #33333311;}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .tag{background:var(--mid);background-color: #6cace4;color:#fff;padding:4px 10px;border-radius:6px;font-size:12px}
-
+.mt-2{margin-top: 10px; background-color: #003274;}
+.mt-2:hover{background: #004f85;}
 .map-placeholder{height:420px;border-radius:6px;background:linear-gradient(180deg,#f2f8ff,#fff);display:flex;align-items:center;justify-content:center;border:1px dashed #dbeefc;margin-top:12px}
 
 /* footer */
-.footer{text-align:center;padding:18px;color:#3333338a;font-size:13px;margin-top:20px}
+.footer{text-align:center;padding:18px;color:#3333338a;font-size:13px;margin-top:20px;}
 
 /* MOBILE PANEL */
-.mobile-panel{display:none;position:fixed;left:0;right:0;bottom:0;background:#fff;border-top-left-radius:16px;border-top-right-radius:16px;transform:translateY(85%);transition:.28s;box-shadow:0 -8px 30px rgba(0,0,0,.12);z-index:70}
-.mobile-panel.open{transform:translateY(0)}
+.mobile-panel{display:none;position:fixed;left:0;right:0;bottom:0;top: 0;height: 100vh;background:#fff;border-top-left-radius:16px;border-top-right-radius:16px;transform:translateY(85%);transition:.28s;box-shadow:0 -8px 30px rgba(0,0,0,.12);z-index:70;}
+.mobile-panel.open{transform:translateY(0);}
 .panel-header{height:28px;display:flex;align-items:center;justify-content:center}
 .panel-header::after{content:"";width:80px;height:6px;border-radius:6px;background:#d1d5db}
-.mobile-content{padding:12px}
+.mobile-content{padding:12px;overflow-y: auto;-webkit-overflow-scrolling: touch;height: calc(100vh - 28px - 12px*2)}
 
 /* RESPONSIVE — ONLY MOBILE */
 @media(max-width:900px){
@@ -204,7 +247,7 @@ a:hover{
   background: rgba(0,0,0,0.55);
   display: none;
   opacity: 0;
-  z-index: 50;
+  z-index: 1001;
 }
 
 /* Модальное окно */
@@ -222,7 +265,7 @@ a:hover{
   scale: 0.95;
   transition: 0.25s;
   display: none;
-  z-index: 60;
+  z-index: 1001;
   max-height: 90vh;  
   overflow-y: auto;
 }
@@ -384,3 +427,10 @@ a:hover{
   font-size: 13px;
   opacity: 0.85;
 }
+
+.modal-close {
+  cursor: pointer;
+  font-size: 22px;
+  color: #333333;
+}
+

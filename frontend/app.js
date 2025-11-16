@@ -1,3 +1,9 @@
+/* =========================
+     ГЛОБАЛЬНЫЕ ДАННЫЕ
+========================= */
+
+let filteredOrgs = []; // <-- обязательно!
+
 (function(){
   const filters = [
     { name: "образование", icon: "school" },
@@ -36,22 +42,22 @@
   let activeFilters = new Set();
   let query = '';
 
-  
+/* =========================
+      РЕНДЕР ФИЛЬТРОВ
+========================= */
+
 function renderFilters(container){
     container.innerHTML = '';
     filters.forEach(f => {
-      // wrapper for each grid item
       const item = document.createElement('div');
       item.className = 'filter-item';
 
-      // button that holds only the icon
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'filter-btn';
       b.innerHTML = `<span class="material-icons">${f.icon}</span>`;
       b.onclick = () => toggleFilter(f.name, b);
 
-      // label below the button (outside the button)
       const lbl = document.createElement('div');
       lbl.className = 'filter-label';
       lbl.textContent = f.name;
@@ -60,10 +66,13 @@ function renderFilters(container){
       item.appendChild(lbl);
       container.appendChild(item);
     });
-  }
+}
 
+/* =========================
+      ПЕРЕКЛЮЧЕНИЕ ФИЛЬТРА
+========================= */
 
-  function toggleFilter(name, node){
+function toggleFilter(name, node){
     if(activeFilters.has(name)){
       activeFilters.delete(name);
       node.classList.remove('active');
@@ -72,11 +81,16 @@ function renderFilters(container){
       node.classList.add('active');
     }
     applyFilters();
-  }
+}
 
-  function renderOrgs(list){
+/* =========================
+      РЕНДЕР ОРГАНИЗАЦИЙ
+========================= */
+
+function renderOrgs(list){
     orgListLeft.innerHTML = '';
     orgListMobile.innerHTML = '';
+
     list.forEach(o => {
       const card = document.createElement('div');
       card.className = 'org-card';
@@ -88,91 +102,97 @@ function renderFilters(container){
          <div class="org-address">${o.address}</div>`;
 
       orgListLeft.appendChild(card);
-      orgListMobile.appendChild(card.cloneNode(true));
+
+      const clone = card.cloneNode(true);
+      orgListMobile.appendChild(clone);
     });
 
     foundCount.textContent = list.length;
     foundCountMobile.textContent = list.length;
-  }
+}
 
-  function applyFilters(){
+/* =========================
+         ФИЛЬТРАЦИЯ
+========================= */
+
+function applyFilters(){
     const q = query.trim().toLowerCase();
-    let list = orgs.filter(o =>
+
+    filteredOrgs = orgs.filter(o =>
       o.name.toLowerCase().includes(q) ||
       o.address.toLowerCase().includes(q)
     );
 
     if(activeFilters.size){
-      list = list.filter(o =>
+      filteredOrgs = filteredOrgs.filter(o =>
         Array.from(activeFilters)
-             .some(f => o.tags.map(t=>t.toLowerCase()).includes(f.toLowerCase()))
+             .some(f =>
+               o.tags.map(t => t.toLowerCase()).includes(f.toLowerCase())
+             )
       );
     }
 
-    renderOrgs(list);
-  }
+    renderOrgs(filteredOrgs);
+    attachOrgClickHandlers();
+}
 
-  // Search sync
-  searchInput?.addEventListener('input', e=>{
+/* =========================
+          ПОИСК
+========================= */
+
+searchInput?.addEventListener('input', e=>{
     query = e.target.value;
     searchInputMobile.value = query;
     applyFilters();
-  });
+});
 
-  searchInputMobile?.addEventListener('input', e=>{
+searchInputMobile?.addEventListener('input', e=>{
     query = e.target.value;
     searchInput.value = query;
     applyFilters();
-  });
+});
 
-  // Mobile panel
-  panelHeader.addEventListener('click', ()=> mobilePanel.classList.toggle('open'));
-  mobileOpenBtn?.addEventListener('click', ()=> mobilePanel.classList.add('open'));
-  mobileCloseBtn?.addEventListener('click', ()=> mobilePanel.classList.remove('open'));
+/* =========================
+     МОБИЛЬНАЯ ПАНЕЛЬ
+========================= */
 
-  // Initialize
-  renderFilters(filtersEl);
-  renderFilters(filtersMobileEl);
-  applyFilters();
+panelHeader.addEventListener('click', ()=> mobilePanel.classList.toggle('open'));
+mobileOpenBtn?.addEventListener('click', ()=> mobilePanel.classList.add('open'));
+mobileCloseBtn?.addEventListener('click', ()=> mobilePanel.classList.remove('open'));
+
+/* =========================
+      ИНИЦИАЛИЗАЦИЯ
+========================= */
+
+renderFilters(filtersEl);
+renderFilters(filtersMobileEl);
+applyFilters();
+
 })();
 
-/* --- AUTOCOMPLETE ГОРОДОВ --- */
+
+/* =========================
+    АВТОКОМПЛИТ ГОРОДОВ
+========================= */
 
 const rosatomCities = [
-  "Железногорск",
-  "Саров",
-  "Озерск",
-  "Заречный",
-  "Снежинск",
-  "Нововоронеж",
-  "Северск",
-  "Трехгорный",
-  "Зеленогорск",
-  "Лесной",
-  "Межгорье",
-  "Полярные Зори"
+  "Железногорск","Саров","Озерск","Заречный","Снежинск",
+  "Нововоронеж","Северск","Трехгорный","Зеленогорск",
+  "Лесной","Межгорье","Полярные Зори"
 ];
 
 const cityInput = document.getElementById("city-input");
 const citySuggestions = document.getElementById("city-suggestions");
-const selectedCity = document.getElementById("selected-city");
 
 function updateCitySuggestions() {
   const query = cityInput.value.trim().toLowerCase();
+  if (!query) return citySuggestions.style.display = "none";
 
-  if (!query) {
-    citySuggestions.style.display = "none";
-    return;
-  }
-
-  const list = rosatomCities.filter(city =>
-    city.toLowerCase().startsWith(query)
+  const list = rosatomCities.filter(c =>
+    c.toLowerCase().startsWith(query)
   );
 
-  if (list.length === 0) {
-    citySuggestions.style.display = "none";
-    return;
-  }
+  if (!list.length) return citySuggestions.style.display = "none";
 
   citySuggestions.innerHTML = "";
   list.forEach(city => {
@@ -188,17 +208,17 @@ function updateCitySuggestions() {
   citySuggestions.style.display = "block";
 }
 
-// события
 cityInput.addEventListener("input", updateCitySuggestions);
-
-// скрытие списка при клике вне
 document.addEventListener("click", (e) => {
   if (!citySuggestions.contains(e.target) && e.target !== cityInput) {
     citySuggestions.style.display = "none";
   }
 });
 
-// Модалки
+
+/* =========================
+       СТАНДАРТНЫЕ МОДАЛКИ
+========================= */
 
 const loginModal = document.getElementById("login-modal");
 const registerModal = document.getElementById("register-modal");
@@ -233,87 +253,65 @@ document.getElementById("open-login-link").onclick = () => {
 };
 
 
+/* =========================
+   МОДАЛКА ДОБАВЛЕНИЯ ТОЧКИ
+========================= */
 
 document.addEventListener('DOMContentLoaded', () => {
-  try {
-    const addBtn = document.getElementById('add-point-btn');
-    const modal = document.getElementById('create-point-modal');
-    const overlay = document.getElementById('modal-overlay');
+  const addBtn = document.getElementById('add-point-btn');
+  const modal = document.getElementById('create-point-modal');
+  const overlay = document.getElementById('modal-overlay');
 
-    // Если какого-нибудь блока нет — не пытаемся дальше привязывать обработчики,
-    // но оставляем страницу рабочей и выводим предупреждение.
-    if (!addBtn || !modal || !overlay) {
-      console.warn('Modal init: отсутствуют необходимые элементы. Проверьте id:\n',
-                   'add-point-btn:', !!addBtn,
-                   'create-point-modal:', !!modal,
-                   'modal-overlay:', !!overlay);
-      return;
-    }
+  if (!addBtn || !modal || !overlay) return;
 
-    // Функции открытия/закрытия
-    const openModal = () => {
-      overlay.classList.add('active');
-      modal.classList.add('active');
-      // блокируем прокрутку страницы при открытой модалке (опционально)
-      document.documentElement.style.overflow = 'hidden';
-    };
-    const closeModal = () => {
-      overlay.classList.remove('active');
-      modal.classList.remove('active');
-      document.documentElement.style.overflow = '';
-    };
+  const openM = () => {
+    overlay.classList.add('active');
+    modal.classList.add('active');
+    document.documentElement.style.overflow = 'hidden';
+  };
+  const closeM = () => {
+    overlay.classList.remove('active');
+    modal.classList.remove('active');
+    document.documentElement.style.overflow = '';
+  };
 
-    // Открыть по кнопке
-    addBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      openModal();
-    });
+  addBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openM();
+  });
 
-    // Закрыть по клику на оверлей
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) closeModal();
-    });
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeM();
+  });
 
-    // Закрыть по всем элементам с data-close
-    document.querySelectorAll('[data-close]').forEach(el => {
-      el.addEventListener('click', (ev) => { ev.preventDefault(); closeModal(); });
-    });
+  document.querySelectorAll('[data-close]').forEach(el => {
+    el.addEventListener('click', (ev) => { ev.preventDefault(); closeM(); });
+  });
 
-    // ESC — закрыть
-    document.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Escape') closeModal();
-    });
-
-    console.info('Modal init: успешно привязаны обработчики.');
-  } catch (err) {
-    // В идеале ошибок не должно быть, но на случай — выводим их в консоль
-    console.error('Modal init: непредвиденная ошибка', err);
-  }
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') closeM();
+  });
 });
 
 
+/* =========================
+     ТЕГИ В ФОРМЕ НКО
+========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("tagsSelect");
+    if (!container) return;
+
     const tags = Array.from(container.children);
 
-    // Сохраняем оригинальный порядок
     tags.forEach((tag, i) => tag.dataset.originalIndex = i);
 
     function reorder() {
         const all = Array.from(container.children);
-
         const active = all.filter(t => t.classList.contains("active"));
         const inactive = all.filter(t => !t.classList.contains("active"));
-
-        // Возвращаем неактивные в исходном порядке
         inactive.sort((a, b) => a.dataset.originalIndex - b.dataset.originalIndex);
-
-        // Составляем новый порядок: активные первыми
-        const newOrder = [...active, ...inactive];
-
-        // Добавляем в контейнер
-        newOrder.forEach(el => container.appendChild(el));
+        [...active, ...inactive].forEach(el => container.appendChild(el));
     }
 
     tags.forEach(tag => {
@@ -325,10 +323,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// Добавление лого
+/* =========================
+    ПРЕВЬЮ ЛОГО
+========================= */
+
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("nko-logo");
     const status = document.getElementById("file-status");
+    if (!input) return;
 
     input.addEventListener("change", () => {
         if (input.files.length > 0) {
@@ -340,3 +342,106 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+
+/* =========================
+   МОДАЛКА ПРОСМОТРА ОРГ.
+========================= */
+
+function openOrgModal(org) {
+    const modal = document.getElementById("org-view-modal");
+    const overlay = document.getElementById("modal-overlay");
+
+    document.getElementById("org-view-title").textContent = org.name;
+    document.getElementById("org-view-logo").src = org.logo || "img/default.png";
+    document.getElementById("org-view-address").textContent = org.address;
+    document.getElementById("org-view-description").textContent = org.description || "Описание отсутствует";
+
+    document.getElementById("org-view-contacts").innerHTML = `
+        ${org.phone ? `<div><b>Телефон:</b> ${org.phone}</div>` : ""}
+        ${org.email ? `<div><b>Email:</b> ${org.email}</div>` : ""}
+        ${org.site ? `<div><b>Сайт:</b> <a href="${org.site}" target="_blank">${org.site}</a></div>` : ""}
+    `;
+
+    document.getElementById("org-view-events").innerHTML =
+        org.events?.length
+            ? org.events.map(ev => `<div style="margin-bottom:6px;">${ev}</div>`).join("")
+            : "Нет мероприятий";
+
+    overlay.classList.add("active");
+    modal.classList.add("active");
+}
+
+
+/* =========================
+     ПРИВЯЗКА КАРТОЧЕК
+========================= */
+
+function attachOrgClickHandlers() {
+    document.querySelectorAll(".org-card").forEach((card, index) => {
+        card.onclick = () => openOrgModal(filteredOrgs[index]);
+    });
+}
+// Закрытие модалки по крестику и overlay
+document.addEventListener("click", function (e) {
+    if (e.target.hasAttribute("data-close")) {
+        closeModal();
+    }
+
+    if (e.target.id === "modal-overlay") {
+        closeModal();
+    }
+});
+
+// Закрытие по Esc
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+        closeModal();
+    }
+});
+
+function closeModal() {
+    document.querySelectorAll(".modal.active").forEach(m => m.classList.remove("active"));
+    const overlay = document.getElementById("modal-overlay");
+    overlay.classList.remove("active");
+}
+
+function openOrgModal(org) {
+    const modal = document.getElementById("org-view-modal");
+    const overlay = document.getElementById("modal-overlay");
+
+    // 1. Фото
+    document.getElementById("org-view-logo").src = org.logo || "img/default.png";
+
+    // 2. Тэги
+    document.getElementById("org-view-tags").innerHTML =
+        org.tags?.length
+            ? org.tags.map(t => `<div class="tag">${t}</div>`).join("")
+            : "";
+
+    // 3. Название жирным
+    document.getElementById("org-view-title").textContent = org.name;
+
+    // 4. Адрес
+    document.getElementById("org-view-address").textContent = org.address;
+
+    // Описание
+    document.getElementById("org-view-description").textContent =
+        org.description || "Описание отсутствует";
+
+    // Контакты
+    document.getElementById("org-view-contacts").innerHTML = `
+        ${org.phone ? `<div><b>Телефон:</b> ${org.phone}</div>` : ""}
+        ${org.email ? `<div><b>Email:</b> ${org.email}</div>` : ""}
+        ${org.site ? `<div><b>Сайт:</b> <a href="${org.site}" target="_blank">${org.site}</a></div>` : ""}
+    `;
+
+    // Мероприятия
+    document.getElementById("org-view-events").innerHTML =
+        org.events?.length
+            ? org.events.map(ev => `<div style="margin-bottom:6px;">${ev}</div>`).join("")
+            : "Нет мероприятий";
+
+    overlay.classList.add("active");
+    modal.classList.add("active");
+}

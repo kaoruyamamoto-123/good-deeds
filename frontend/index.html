@@ -19,9 +19,13 @@
     </div>
 
     <div class="nav-right">
+      <button class="btn-outline" id="my-points-btn">Моя точка</button>
       <button class="btn-outline" id="add-point-btn">
         <span class="material-icons">add</span>Добавить точку</button>
       <button class="btn-outline" id="login-btn">Войти</button>
+      <div class="notif-icon">
+        <span class="material-icons">mail</span>
+      </div>
     </div>
   </header>
 
@@ -135,13 +139,16 @@
 
       <div id="orgListLeft" class="org-list"></div>
 
+    
+
+
       <button id="load-more-left" class="btn-outline mt-2">Загрузить ещё</button>
     </aside>
 
     <main class="main-area">
       <aside class="right-col">
         <div class="city-block">
-            <input id="city-input" class="input" placeholder="Выберите город" autocomplete="off" />
+            <input id="city-input" class="input" placeholder="Выбрать город" autocomplete="off" />
             <ul id="city-suggestions" class="city-suggestions"></ul>
             <div id="selected-city" class="selected-city"></div>
         </div>
@@ -152,7 +159,7 @@
     </main>
   </div>
 
-  <!-- Mobile Bottom Sheet -->
+  <!-- Mobile -->
   <div class="mobile-panel" id="mobilePanel">
     <div class="panel-header" id="panelHeader"></div>
     <div class="mobile-content">
@@ -174,7 +181,40 @@
     </div>
   </div>
 
-    <footer class="footer">© 2025 Карта добрых дел </footer>
+    <!-- Модалка просмотра организации -->
+  <div class="modal" id="org-view-modal">
+
+    <div class="modal-header">
+      <span class="modal-close" data-close>&times;</span>
+    </div>
+
+    <!-- 1. Фото -->
+    <img id="org-view-logo" style="width:140px;border-radius:10px;margin-bottom:15px;">
+
+    <!-- 2. Тэги -->
+    <div id="org-view-tags" class="tags" style="margin-bottom:12px;"></div>
+
+    <!-- 3. Название жирным -->
+    <div id="org-view-title" style="font-weight:700;font-size:20px;margin-bottom:6px;color:#333;"></div>
+
+    <!-- 4. Адрес -->
+    <div id="org-view-address" style="color:#555;margin-bottom:18px;"></div>
+
+    <!-- Остальной блок как было -->
+    <h4 style="margin-top:10px;margin-bottom:6px;">Описание</h4>
+    <div id="org-view-description" style="white-space:pre-line;color:#333"></div>
+
+    <h4 style="margin-top:16px;margin-bottom:6px;">Контакты</h4>
+    <div id="org-view-contacts"></div>
+
+    <h4 style="margin-top:16px;margin-bottom:6px;">Мероприятия</h4>
+    <div id="org-view-events"></div>
+
+  </div>
+
+
+  
+  <footer class="footer">© 2025 Карта добрых дел </footer>
 
 
   <script src="app.js"></script>
